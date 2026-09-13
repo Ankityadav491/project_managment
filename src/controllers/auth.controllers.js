@@ -1,7 +1,8 @@
-import {User} from "../models/user.models.js"
-import {ApiResponse} from "../models/api-response.js"
-import {ApiError} from "../models/api-error.js"
-import {asyncHandler} from "../models/async-handler.js"
+import { User } from "../models/user.models.js";
+import { ApiResponse } from "../utils/api-response.js";
+import { ApiError } from "../utils/api-error.js";
+import { asyncHandler } from "../utils/async-handler.js";
+
 import {emailVerificationMailgenContent, sendEmail} from "../utils/mail.js"
 
 
@@ -31,7 +32,7 @@ const registerUser=asyncHandler(async(req,res)=>{
         throw new ApiError(409,"User with email or name is already exists",[])
     }
 
-    const user=User.create({
+    const user= await User.create({
         email,
         password,
         username,

@@ -2,6 +2,7 @@ import mongoose,{Schema} from "mongoose";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import crypto from "crypto"
+import { error } from "console";
 
 const userSchema=new Schema(
     {
@@ -62,11 +63,11 @@ const userSchema=new Schema(
 },
 );
 
-userSchema.pre("save",async function (next){
+userSchema.pre("save",async function (){
     //safe gaurding that only hash when work on password not on any password
-    if(!this.isModified("password")) return next()
+    if(!this.isModified("password")) return 
     this.password=await bcrypt.hash(this.password,10)
-    next()
+    
 })
 
 
@@ -108,7 +109,7 @@ userSchema.methods.generateTemporaryToken=function(){
         .digest("hex")
 
     const tokenExpiry=Date.now()+(20*60*1000) //adding 20mins of expiry to token genereated
-    return (unHashedToken,hashedToken,tokenExpiry)
+    return {unHashedToken,hashedToken,tokenExpiry};
 }
 
 
