@@ -2,7 +2,7 @@ import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/api-response.js";
 import { ApiError } from "../utils/api-error.js";
 import { asyncHandler } from "../utils/async-handler.js";
-
+import crypto from "crypto";
 import {emailVerificationMailgenContent, sendEmail} from "../utils/mail.js"
 
 
@@ -137,7 +137,65 @@ const logoutUser=asyncHandler(async(req,res)=>{
         httpOnly:true,
         secure:false
     }
-    return res.status(200).clearCookie("accessToken",options).clearCookie("refreshToken").json(new ApiResponse(200,{},"User logged out"));
+    return res.status(200).clearCookie("accessToken",options).clearCookie("refreshToken",options).json(new ApiResponse(200,{},"User logged out"));
 });
 
-export {registerUser,login,logoutUser};
+const getCurrentUser=asyncHandler(async(req,res)=>{
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            req.user,
+            "Current User fetched Succcessfully"
+        )
+    )
+})
+
+const verifyEmail=asyncHandler(async(req,res)=>{
+    const{verificationToken}=req.params
+    if(!verificationToken){
+        throw new ApiError(400,"Email verification token is missing")
+    }
+    let hashedToken=crypto
+    .createHash("sha256")// algo should be same  while creating and passing  like sha256 or else it will not match
+    .update(verificationToken)
+    .digest("hex")
+
+    const user = await User.findOne({
+    emailVerificationToken: hashedToken,
+    emailVerificationExpiry: { $gt: Date.now() }
+    });
+
+    if(!user){
+        throw new ApiError(400,"Token is invalid or Expired")
+    }
+
+    //there is some data in these tokens so clearing it before logging out this is optional
+    user.emailVerificationToken=undefined
+    user.emailVerificationExpiry=undefined
+
+    user.isEmailVerified=true;
+    await user.save({validateBeforeSave:false})
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            {
+                isEmailVerified:true
+            },
+
+        )
+    )
+})
+
+// const resendEmail=asyncHandler(async(req,res)=>{
+
+// })
+
+
+// const getCurrentUser=asyncHandler(async(req,res)=>{
+
+// })
+
+
+
+export {registerUser,login,logoutUser,getCurrentUser,verifyEmail};
