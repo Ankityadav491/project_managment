@@ -1,4 +1,6 @@
 import { body } from "express-validator";
+
+
 const userRegisterValidator=()=>{
     return [
         body("email")
@@ -40,7 +42,7 @@ const userChangeCurrentPasswordValidator=()=>{
 }
 
 
-const userFogotPasswordValidator=()=>{
+const userForgotPasswordValidator=()=>{
     return [
         body("email")
             .notEmpty()
@@ -52,7 +54,7 @@ const userFogotPasswordValidator=()=>{
 }
 
 
-const userResetFogotPasswordValidator=()=>{
+const userResetForgotPasswordValidator=()=>{
     return [
         body("newPassword")
             .notEmpty()
@@ -66,7 +68,7 @@ export {
     userRegisterValidator,
     userLoginValidator,
     userChangeCurrentPasswordValidator,
-    userFogotPasswordValidator,
-    userResetFogotPasswordValidator,
+    userForgotPasswordValidator,
+    userResetForgotPasswordValidator,
 
 }
