@@ -11,7 +11,7 @@ export const validate=(req,res,next)=>{
     const extractedErrors=[];
     errors.array().map((error)=>extractedErrors.push(
         {
-            [err.path]:err.msg
+            [errors.path]:errors.msg
         }));
         throw new ApiError(422,"Entered data is not valid",extractedErrors);
 };

@@ -53,7 +53,7 @@ const registerUser=asyncHandler(async(req,res)=>{
             subject:"Please verify your email",
             mailgenContent:emailVerificationMailgenContent(
                 (await user).username,
-                `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`,
+                `${req.protocol}://${req.get("host")}/api/v1/auth/verify-email/${unHashedToken}`,
             ),
         }
     );
@@ -210,7 +210,7 @@ const resendEmailVerification=asyncHandler(async(req,res)=>{
             subject:"Please verify your email",
             mailgenContent:emailVerificationMailgenContent(
                 (await user).username,
-                `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`,
+                `${req.protocol}://${req.get("host")}/api/v1/auth/verify-email/${unHashedToken}`,
             ),
         }
     );
@@ -240,7 +240,7 @@ const refreshAccessToken=asyncHandler(async(req,res)=>{
             throw new ApiError(401,"Invalid Refresh Token")
         }
         
-        if(incomingRefreshToken!==user?.refereshToken){
+        if(incomingRefreshToken!==user?.refreshToken){
             throw new ApiError(401,"Refresh token is expired")
         }
 
@@ -249,10 +249,10 @@ const refreshAccessToken=asyncHandler(async(req,res)=>{
             secure:false
         }
 
-        const {accessToken,refereshToken: newRefreshToken}=await generateAccessAndRefreshTokens(user._id)
+        const {accessToken,refreshToken: newRefreshToken}=await generateAccessAndRefreshTokens(user._id)
 
         //we should update the refresh token then update the database
-        user.refereshToken=newRefreshToken;
+        user.refreshToken=newRefreshToken;
         await user.save()
 
         return res
@@ -360,7 +360,9 @@ const changeCurrentPassword=asyncHandler(async(req,res)=>{
         .status(200)
         .json(
             new ApiResponse(
-                200,{},"Password Changed Successfully"
+                200,
+                {},
+                "Password Changed Successfully"
             )
         )
 })

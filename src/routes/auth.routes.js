@@ -24,9 +24,13 @@ router.route("/reset-password/:resetToken").post(userResetForgotPasswordValidato
 //secure routes->reqire verify jwt or authentication
 router.route("/logout").post(verifyJWT,logoutUser);
 
-router.route("/current-user").post(verifyJWT,getCurrentUser);
+router.route("/current-user").get(verifyJWT,getCurrentUser);
 
-router.route("/change-password").post(verifyJWT,userChangeCurrentPasswordValidator,validate,changeCurrentPassword);
+router.route("/change-password").post(
+    verifyJWT,
+    userChangeCurrentPasswordValidator(),//it returns the array of express-validator that why () it was major issue to debug
+    validate,changeCurrentPassword
+);
 
 router.route("/resend-email-verification").post(verifyJWT,resendEmailVerification);
 

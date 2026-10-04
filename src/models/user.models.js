@@ -43,7 +43,7 @@ const userSchema=new Schema(
         type:Boolean,
         default:false
     },
-    refereshToken:{
+    refreshToken:{
         type:String
     },
     forgotPasswordToken:{
